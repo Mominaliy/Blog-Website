@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
+const User = require("../models/User");
+
+const JWT_SECRET = "blogvault";
 
 exports.verify = async (req, res, next) => {
   let token;

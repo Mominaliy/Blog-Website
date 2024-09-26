@@ -15,8 +15,9 @@ const postSchema = new mongoose.Schema({
       commentby: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },
   ],
-  categories: [String],
+  category: { type: String },
   date: { type: Date, default: Date.now },
+  isTrending: {type: Boolean}
 });
 
 const Post = mongoose.model("Post", postSchema);

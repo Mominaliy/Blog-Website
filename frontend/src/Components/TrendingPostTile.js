@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const TrendingPostTile = ({
   title,
@@ -7,7 +8,9 @@ const TrendingPostTile = ({
   date,
   category,
   author,
+  id,
 }) => {
+  const navigate = useNavigate();
   const categoryColors = {
     Health: "bg-red-400",
     Technology: "bg-blue-400",
@@ -22,15 +25,24 @@ const TrendingPostTile = ({
     Sports: "text-yellow-500",
     Business: "text-purple-500",
   };
+
+  const handlePostClick = () => {
+    navigate(`/post/${id}`);
+  };
+
   return (
-    <div className="bg-white group flex md:flex-row flex-col p-4 gap-4 rounded-2xl cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all duration-300 shadow-md">
+    <div
+      onClick={handlePostClick}
+      className="bg-white group flex md:flex-row flex-col p-4 gap-4 rounded-2xl cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all duration-300 shadow-md"
+    >
       <div>
         <img
           className="xl:w-[100px] lg:w-[70px] md:w-[150px] w-[350px] rounded-xl"
           src={image}
+          alt="Post"
         ></img>
       </div>
-      <div className="flex flex-col justify-between py-3 gap-4">
+      <div className="flex flex-col justify-between py-1 gap-4">
         <div className="flex flex-col xl:gap-4 lg:gap-2 md:gap-2 gap-2">
           <div className="flex gap-3 items-center">
             <div

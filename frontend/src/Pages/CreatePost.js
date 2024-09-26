@@ -1,32 +1,69 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
-import Navbar from "../Components/Navbar";
+import Navbar from "../components/Navbar";
 import { GrCloudUpload } from "react-icons/gr";
+import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
+import { storage } from "../utils/firebase";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router";
 
 const CreatePost = () => {
+  const { user } = useContext(AuthContext);
+
+  const navigate = useNavigate();
+
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [category, setCategory] = useState("Health");
   const [paragraph, setParagraph] = useState("");
-  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [uploadprogress, setUploadprogress] = useState(0);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
+
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onload = () => {
         setImage(reader.result);
       };
       reader.readAsDataURL(file);
     }
+
+    const timestamp = Date.now();
+
+    if (file) {
+      const storageRef = ref(storage, `blogImages/${timestamp}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadprogress(progress);
+        },
+        (error) => {
+          console.error("Upload failed:", error);
+          toast.error("Image upload failed!");
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setImageUrl(downloadURL);
+            toast.success("Image uploaded successfully!");
+          });
+        }
+      );
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     const newErrors = {};
 
-    // Validation
-    if (!image) newErrors.image = "Image is required.";
+    if (!imageUrl) newErrors.image = "Image is required.";
     if (!title) newErrors.title = "Title is required.";
     if (!category) newErrors.category = "Category is required.";
     if (!paragraph) newErrors.paragraph = "Paragraph is required.";
@@ -34,6 +71,7 @@ const CreatePost = () => {
     Object.values(newErrors).forEach((error) => toast.error(error));
 
     if (Object.keys(newErrors).length > 0) {
+      setLoading(false);
       return;
     }
 
@@ -41,9 +79,40 @@ const CreatePost = () => {
       title,
       category,
       paragraph,
-      image,
+      image: imageUrl,
+      author: user.user._id,
     };
-    console.log(postData);
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/posts/createPost",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+          body: JSON.stringify(postData),
+        }
+      );
+      if (response.ok) {
+        toast.success("Blog Published");
+        setTimeout(() => {
+          navigate("/");
+          setLoading(false);
+        }, 1500);
+      }
+      if (response.status === 401) {
+        toast.error("Unauthorized, Please Login");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
+        setLoading(false);
+      }
+    } catch (e) {
+      toast.error("Unable to create blog post");
+      setLoading(false);
+    }
+    setLoading(false);
   };
 
   return (
@@ -70,11 +139,13 @@ const CreatePost = () => {
                     className="flex flex-col items-center justify-center w-full h-64 border-2 border-teal-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition duration-300 ease-in-out"
                   >
                     {image ? (
-                      <img
-                        src={image}
-                        alt="Uploaded"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
+                      <>
+                        <img
+                          src={image}
+                          alt="Uploaded"
+                          className="w-full h-full object-fit rounded-lg"
+                        />
+                      </>
                     ) : (
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <GrCloudUpload className="size-10 text-gray-400" />
@@ -98,6 +169,17 @@ const CreatePost = () => {
                   </label>
                 </div>
               </div>
+              {image && (
+                <div className="h-1 rounded-xl w-full bg-gray-300 mt-0.5 mb-3">
+                  <div
+                    className="h-full rounded-xl bg-gradient-to-r from-green-500 to-teal-800"
+                    style={{
+                      width: `${uploadprogress}%`,
+                      transition: "width 0.5s linear",
+                    }}
+                  ></div>
+                </div>
+              )}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Title
@@ -143,9 +225,13 @@ const CreatePost = () => {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-teal-500 text-white font-semibold rounded-md shadow-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform transition hover:scale-105 duration-300 ease-in-out"
+                  className="w-40 py-3 flex items-center justify-center bg-teal-500 text-white font-semibold rounded-md shadow-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform transition hover:scale-105 duration-300 ease-in-out"
                 >
-                  Publish Post
+                  {loading ? (
+                    <div className="border-r-gray-200 border-l-gray-200 border-t-teal-500 border-b-teal-500 animate-spin inline-block size-5 border-[2px] rounded-full"></div>
+                  ) : (
+                    "Publish Post"
+                  )}
                 </button>
               </div>
             </form>

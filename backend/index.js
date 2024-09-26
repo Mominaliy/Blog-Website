@@ -1,12 +1,41 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+
+const authroutes = require("./routes/authroute");
+const postroutes = require("./routes/postroute");
+
+const MONGO_URI =
+  "mongodb+srv://mominali1720:rRLgGHtLk6HZK9SF@cluster0.fbse2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://192.168.18.31:3000",
+      "https://blog-website-lac-zeta.vercel.app/",
+    ],
+  })
+);
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.use("/api/auth", authroutes);
+app.use("/api/posts", postroutes);
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
+
+const PORT = 8080;
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Connected to Database and Listening on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
