@@ -11,15 +11,21 @@ const MONGO_URI =
 const app = express();
 
 app.use(express.json());
+
 app.use(
   cors({
     origin: [
+      "https://blogvault-peach.vercel.app",
       "http://localhost:3000",
       "http://192.168.18.31:3000",
-      "https://blog-website-lac-zeta.vercel.app/",
+      "https://blog-website-lac-zeta.vercel.app",
     ],
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    credentials: true,
   })
 );
+
+app.options("*", cors());
 
 app.use("/api/auth", authroutes);
 app.use("/api/posts", postroutes);
@@ -32,8 +38,10 @@ const PORT = 8080;
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Connected to Database and Listening on port ${PORT}`);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(
+        `Connected to Database and Listening on port http://0.0.0.0:${PORT}`
+      );
     });
   })
   .catch((error) => {

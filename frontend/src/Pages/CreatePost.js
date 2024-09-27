@@ -84,7 +84,7 @@ const CreatePost = () => {
     };
     try {
       const response = await fetch(
-        "http://localhost:8080/api/posts/createPost",
+        `${process.env.REACT_APP_API_URL}/api/posts/createPost`,
         {
           method: "POST",
           headers: {

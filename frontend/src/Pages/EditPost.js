@@ -69,14 +69,17 @@ const EditPost = () => {
       image: imageUrl,
     };
     try {
-      const response = await fetch(`http://localhost:8080/api/posts/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-        body: JSON.stringify(postData),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/posts/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+          body: JSON.stringify(postData),
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         console.log(data);
@@ -94,9 +97,12 @@ const EditPost = () => {
   }, []);
   const fetchPost = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/posts/${id}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/posts/${id}`,
+        {
+          method: "GET",
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setImage(data.image);

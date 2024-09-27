@@ -28,6 +28,7 @@ exports.getPosts = async (req, res) => {
 
   try {
     const posts = await Post.find()
+      .sort({ date: -1 })
       .skip(skip)
       .limit(limit)
       .populate("author", "username")

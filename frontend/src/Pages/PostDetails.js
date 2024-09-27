@@ -30,9 +30,12 @@ const PostDetails = () => {
 
   const fetchPost = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/posts/${id}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/posts/${id}`,
+        {
+          method: "GET",
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         console.log(data);
@@ -57,7 +60,7 @@ const PostDetails = () => {
     }
     try {
       const response = await fetch(
-        `http://localhost:8080/api/posts/addComment/${id}`,
+        `${process.env.REACT_APP_API_URL}/api/posts/addComment/${id}`,
         {
           method: "POST",
           headers: {
@@ -91,7 +94,7 @@ const PostDetails = () => {
   const handleCommentDelete = async (commentId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/posts/deleteComment/${id}/${commentId}`,
+        `${process.env.REACT_APP_API_URL}/api/posts/deleteComment/${id}/${commentId}`,
         {
           method: "DELETE",
           headers: {
@@ -190,27 +193,28 @@ const PostDetails = () => {
                           </p>
                         </div>
                       </div>
-                      {user !== null && user.user._id === comment.commentby && (
-                        <div className="flex flex-row items-center gap-2">
-                          <button className="flex flex-row h-fit px-4 py-3 rounded-lg gap-3 bg-blue-500 items-center hover:bg-blue-600 transition-all duration-200">
-                            <FaRegEdit className="text-white" />
-                            <p className="lg:text-xs text-xs text-white">
-                              Edit
-                            </p>
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleCommentDelete(comment._id);
-                            }}
-                            className="flex flex-row h-fit px-4 py-3 rounded-lg gap-3 bg-red-500 items-center hover:bg-red-600 transition-all duration-200"
-                          >
-                            <MdOutlineDelete className="text-white size-4" />
-                            <p className="lg:text-xs text-xs text-white">
-                              Delete
-                            </p>
-                          </button>
-                        </div>
-                      )}
+                      {user !== null &&
+                        user.user._id === comment.commentby._id && (
+                          <div className="flex flex-row items-center gap-2">
+                            <button className="flex flex-row h-fit px-4 py-3 rounded-lg gap-3 bg-blue-500 items-center hover:bg-blue-600 transition-all duration-200">
+                              <FaRegEdit className="text-white" />
+                              <p className="lg:text-xs text-xs text-white">
+                                Edit
+                              </p>
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleCommentDelete(comment._id);
+                              }}
+                              className="flex flex-row h-fit px-4 py-3 rounded-lg gap-3 bg-red-500 items-center hover:bg-red-600 transition-all duration-200"
+                            >
+                              <MdOutlineDelete className="text-white size-4" />
+                              <p className="lg:text-xs text-xs text-white">
+                                Delete
+                              </p>
+                            </button>
+                          </div>
+                        )}
                     </div>
                   ))}
             </div>

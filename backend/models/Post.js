@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const postSchema = new mongoose.Schema({
   title: { type: String, required: true },
   paragraph: { type: String, required: true },
-  image: { type: String }, // for image upload
+  image: { type: String },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -17,7 +17,7 @@ const postSchema = new mongoose.Schema({
   ],
   category: { type: String },
   date: { type: Date, default: Date.now },
-  isTrending: {type: Boolean}
+  isTrending: { type: Boolean },
 });
 
 const Post = mongoose.model("Post", postSchema);

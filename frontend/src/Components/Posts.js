@@ -17,13 +17,16 @@ const Posts = () => {
 
   const deletePost = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/posts/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/posts/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
       if (response.ok) {
         await fetchData(currentPage);
         toast.success("Post Deleted!");
@@ -46,7 +49,7 @@ const Posts = () => {
   const fetchData = async (page) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/posts/allPosts?page=${page}`,
+        `${process.env.REACT_APP_API_URL}/api/posts/allPosts?page=${page}`,
         { method: "GET" }
       );
       if (response.ok) {
