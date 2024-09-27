@@ -43,14 +43,14 @@ Blog Website for BXTrack Solutions
    ```
    REACT_APP_API_URL=http://0.0.0.0:8080  # Use this when running locally
    # If not running locally, use the following:
-   # REACT_APP_API_URL=https://blogvault.fly.dev
+   REACT_APP_API_URL=https://blogvault.fly.dev
    ```
 
 4. Run the backend:
 
    ```bash
    cd backend
-   nodemon index
+   nodemon index or node index.js
    ```
 
 5. Run the frontend:
@@ -69,17 +69,17 @@ Blog Website for BXTrack Solutions
 
 ### Blog Posts
 
-- `POST /api/createPost`: Create a new blog post (requires authentication).
-- `GET /api/allPosts`: Get all blog posts with pagination.
-- `GET /api/trendingPost`: Get trending blog posts.
-- `GET /api/:id`: Get a single blog post by ID.
-- `PUT /api/:id`: Update a blog post (only by the user who created it, requires authentication).
-- `DELETE /api/:id`: Delete a blog post (only by the user who created it, requires authentication).
+- `POST /api/posts/createPost`: Create a new blog post (requires authentication).
+- `GET /api/posts/allPosts`: Get all blog posts with pagination.
+- `GET /api/posts/trendingPost`: Get trending blog posts.
+- `GET /api/posts/:id`: Get a single blog post by ID.
+- `PUT /api/posts/:id`: Update a blog post (only by the user who created it, requires authentication).
+- `DELETE /api/posts/:id`: Delete a blog post (only by the user who created it, requires authentication).
 
 ### Comments
 
-- `POST /api/addComment/:id`: Add a comment to a post (requires authentication).
-- `DELETE /api/deleteComment/:id/:commentId`: Delete a comment (only by the user who created it, requires authentication).
+- `POST /api/posts/addComment/:id`: Add a comment to a post (requires authentication).
+- `DELETE /api/posts/deleteComment/:id/:commentId`: Delete a comment (only by the user who created it, requires authentication).
 
 ## App Structure Overview
 
